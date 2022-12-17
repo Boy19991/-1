@@ -7,16 +7,19 @@ import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import NProgress from 'nprogress'
 
 
 const props = defineProps({
     script: Object,
+
     path: String,
     errors: Object,
     csrf_token: String,
 })
 const form = useForm({
     id: props.script.id,
+
     title: props.script.title,
     outline: props.script.outline,
     image: props.script.image,
@@ -29,20 +32,29 @@ const selectImage = (e) => {
     e.preventDefault();
     let data = new FormData()
     data.append('file', e.target.files[0])
-    fetch('/upload', {
-        method: 'POST',
-        body: data,
-        headers: {
-            'X-CSRF-TOKEN': props.csrf_token
-            //'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-        form.image = data.image
-        current_image_path.value = data.image_full_path
-    }).catch(error => {console.error(error)})
+
+    let xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.open('POST', '/upload');
+    xhr.setRequestHeader('X-CSRF-TOKEN', props.csrf_token);
+    
+    xhr.upload.onprogress = function(event) {
+        //console.log(`Uploaded ${event.loaded} of ${event.total} bytes`)
+        //console.log(event.loaded)
+        
+        //NProgress.set(event.loaded / event.total * 100 | 0)
+        NProgress.inc() 
+    }
+    xhr.onload = function() {
+        //let responseObj = xhr.response;
+        //alert(responseObj.message); // Hello, world!
+        NProgress.done()
+        console.log(xhr.response)
+        form.image = xhr.response.image
+        current_image_path.value = xhr.response.image_full_path
+    }
+    xhr.send(data)
+    NProgress.start()
 
 }
 const message = computed(()=>{
@@ -129,10 +141,7 @@ onMounted(() => {
 
                                 
                             </form>
-                        
 
-
-        
 
                     </div>
                 </div>
