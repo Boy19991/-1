@@ -56,7 +56,7 @@ class ScriptsController extends Controller
         $result = Script::create([
             'title'=>$request->title,
             'outline'=>$request->outline,
-            'image'=>$request->image_filename,
+            'image'=>$request->image,
         ]);
 
         $result = !$result ? 'error': 'Added successfully';
@@ -104,12 +104,11 @@ class ScriptsController extends Controller
     public function update(Request $request)
     {
         //
-        //
         $script = Script::where('id',$request->id)
             ->update([
                 'title'=>$request->title,
                 'outline'=>$request->outline,
-                'thumbnail'=>$request->thumbnail,
+                'image'=>$request->image,
                 
             ]);
         //$result = !$result ? 'error': 'Deleted successfully';

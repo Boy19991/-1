@@ -27,12 +27,15 @@ use Intervention\Image\ImageManager;
 
 
 Route::get('/', function () {
+    /*
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+    */
+    return view('welcome');
 });
 
 
@@ -75,7 +78,7 @@ Route::post('/upload', function (Request $request) {
     //Storage::put('150-'.$path, $image);
     
     return response()->json([
-        'image_filename' => $image->basename,
+        'image' => $image->basename,
         'image_full_path' => URL::to('') .'/'.$image->basename,
     ]);
 
