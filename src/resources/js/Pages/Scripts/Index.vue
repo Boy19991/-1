@@ -3,11 +3,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import NavLink from '@/Components/NavLink.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { ref, reactive, computed } from 'vue';
 
 const props = defineProps({
     result: String,
     scripts:Object,
     path:String,
+})
+
+let display_image = computed(()=>{
+
 })
 
 </script>
@@ -31,21 +36,23 @@ const props = defineProps({
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     
-                    {{result}}
-                    <div 
-                    id="t-grid"
-                    class="p-4 gap-4 flex"
-                    v-for="script in scripts" :key="script.id">
 
-                        <img id="thumbnail" :src="path + script.image">
-                        <span class="">{{script.title}}</span>
-                        <!--<div class="">{{script.outline}}</div>-->
-                        
+
+                    <div 
+                    class="t-grid p-4 gap-4 flex"
+                    v-for="script in scripts" 
+                    :key="script.id">
+
+                        <div class="flex gap-4">
+                            <img id="thumbnail" :src="script.image" v-if="script.image !==''">
+                            <div v-else>
+                                <div id="no_image"></div>
+                            </div>
+                            <div class="text-3xl pt-2">{{script.title}}</div>
+                        </div>
                         <div class="">
-                            <Link :href="route('scripts.edit', script.id)"  as="button"
-                            class=" bg-green-300 rounded-md p-4 mr-2">編集</Link>
-                            <Link :href="route('scripts.destroy', script.id)" method="delete" as="button"
-                            class=" bg-red-900 text-cyan-50 rounded-md p-4 mr-2">削除</Link>
+                            <Link :href="route('scripts.edit', script.id)"  as="button" class=" bg-green-300 rounded-md p-4 mr-2">編集</Link>
+                            <Link :href="route('scripts.destroy', script.id)" method="delete" as="button" class=" bg-red-900 text-cyan-50 rounded-md p-4 mr-2">削除</Link>
                         </div>
 
                     </div>    
@@ -62,7 +69,7 @@ const props = defineProps({
         max-width:100px;
 
     }
-    #t-grid {
+    .t-grid {
         /*
         display:grid;
         grid-template-columns:repeat(5,1fr);
@@ -76,5 +83,10 @@ const props = defineProps({
         display:flex;
     }
     */
+    #no_image {
+        height:50px;
+        width:50px;
+        background-color: lightslategrey;
+    }
 
 </style>
