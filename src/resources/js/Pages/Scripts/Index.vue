@@ -1,9 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/inertia'
 import NavLink from '@/Components/NavLink.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 
 const props = defineProps({
     result: String,
@@ -11,8 +12,16 @@ const props = defineProps({
     path:String,
 })
 
-let display_image = computed(()=>{
+console.log(props.scripts)
 
+let search = ref('')
+
+watch(search, value=>{
+    console.log(value)
+    console.log(window)
+    Inertia.get('/scripts', {search:value},{
+        preserveState:true,
+    })
 })
 
 </script>
@@ -26,21 +35,40 @@ let display_image = computed(()=>{
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
 
-                <Link
-                    :href="route('scripts.create')"
-                    class="text-lg bg-blue-600 text-zinc-200 p-3 rounded-md inline-block mb-4">
-                    脚本を追加
-                </Link>
+                <div class="flex justify-between">
+
+                    <Link
+                        :href="route('scripts.create')"
+                        class="text-lg bg-blue-600 text-zinc-200 p-3 rounded-md inline-block mb-4">
+                        脚本を追加
+                    </Link>
+
+                    <div>
+
+                        <input v-model="search" type="text" placeholder="search" />
+                    </div>
+
+
+
+                </div>
+
+                
+
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     
 
 
+                    <!--
+
+                        Links
+
+                    -->
                     <div 
                     class="t-grid p-4 gap-4 flex"
-                    v-for="script in scripts" 
+                    v-for="script in scripts.data" 
                     :key="script.id">
 
                         <div class="flex gap-4">
@@ -51,11 +79,28 @@ let display_image = computed(()=>{
                             <div class="text-3xl pt-2">{{script.title}}</div>
                         </div>
                         <div class="">
+                            
                             <Link :href="route('scripts.edit', script.id)"  as="button" class=" bg-green-300 rounded-md p-4 mr-2">編集</Link>
                             <Link :href="route('scripts.destroy', script.id)" method="delete" as="button" class=" bg-red-900 text-cyan-50 rounded-md p-4 mr-2">削除</Link>
+                        
                         </div>
 
-                    </div>    
+                    </div>   
+                    
+                    <!--
+
+                        Pagination
+                        
+                    -->
+
+                    <Link 
+                        v-for="link in scripts.links"
+                        :href="link.url"
+                        v-html="link.label"
+                        class="px-1 pb-4"
+                        :class="link.active ? 'bg-zinc-700 text-yellow-200' : ''"
+                        preserve-state preserve-scroll />
+
 
                 </div>
             </div>

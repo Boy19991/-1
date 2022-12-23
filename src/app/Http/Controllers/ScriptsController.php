@@ -19,11 +19,26 @@ class ScriptsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
 
-        $scripts = Script::all();
-        $path = asset('storage').'/';
+        //return Script::paginate(5);
+        //return $request->search;
+
+        $scripts = 
+            Script::query()
+            ->when($request->search, function($query) use ($request){
+                $query->where('title', 'like', '%'.$request->search.'%');
+                // "%{search}%"
+            })
+            ->paginate(5)
+            ->withQueryString();
+            /* ->through(fn($user)=>{
+                only fields you need
+            })
+            */
+
+        //$path = asset('storage').'/';
         return inertia('Scripts/Index', [
             'scripts'=>$scripts,
             'path'=> URL::to('/').'/',
